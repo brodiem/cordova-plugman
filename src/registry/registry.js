@@ -254,7 +254,7 @@ function initSettings(cb) {
     rc('plugman', {
          cache: plugmanCacheDir,
          force: true,
-         registry: 'http://registry.cordova.io',
+         registry: 'http://localhost',
          logstream: fs.createWriteStream(path.resolve(plugmanConfigDir, 'plugman.log')),
          userconfig: path.resolve(plugmanConfigDir, 'config')
     });
