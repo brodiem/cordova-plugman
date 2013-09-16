@@ -178,12 +178,12 @@ function runInstall(actions, platform, project_dir, plugin_dir, plugins_dir, opt
     var plugin_basename = path.basename(plugin_dir);
     var is_installed = false;
     Object.keys(platform_config.installed_plugins).forEach(function(installed_plugin_id) {
-        if (installed_plugin_id == plugin_id) {
+        if (installed_plugin_id.toLowerCase() == plugin_id.toLowerCase()) {
             is_installed = true;
         }
     });
     Object.keys(platform_config.dependent_plugins).forEach(function(installed_plugin_id) {
-        if (installed_plugin_id == plugin_id) {
+        if (installed_plugin_id.toLowerCase() == plugin_id.toLowerCase()) {
             is_installed = true;
         }
     });
@@ -231,6 +231,24 @@ function runInstall(actions, platform, project_dir, plugin_dir, plugins_dir, opt
             var dep_git_ref = dep.attrib.commit;
             if (dep_subdir) {
                 dep_subdir = path.join.apply(null, dep_subdir.split('/'));
+            }
+
+            var is_installed = false;
+            Object.keys(platform_config.installed_plugins).forEach(function(installed_plugin_id) {
+                if (installed_plugin_id.toLowerCase() == dep_plugin_id.toLowerCase()) {
+                    is_installed = true;
+                }
+            });
+            Object.keys(platform_config.dependent_plugins).forEach(function(installed_plugin_id) {
+                if (installed_plugin_id.toLowerCase() == dep_plugin_id.toLowerCase()) {
+                    is_installed = true;
+                }
+            });
+
+            if (is_installed) {
+                require('../plugman').emit('results', 'Plugin dependancy "' + plugin_id + '" already installed, \'sall good.');
+                end();
+                return;
             }
 
             // Handle relative dependency paths by expanding and resolving them.
