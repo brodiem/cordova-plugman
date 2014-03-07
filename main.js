@@ -75,7 +75,7 @@ if (!cli_opts.silent) {
 plugman.on('error', console.error);
 
 if (cli_opts.version) {
-    console.log(package.version);
+    console.log(package.version + ' (PGB)');
 } else if (cli_opts.help) {
     console.log(plugman.help());
 } else if (plugman.commands[cmd]) {
