@@ -286,9 +286,13 @@ var runInstall = module.exports.runInstall = function runInstall(actions, platfo
                     });
 
                     if (is_installed) {
-                        require('../plugman').emit('results', 'Plugin dependancy "' + plugin_id + '" already installed, \'sall good.');
+                        require('../plugman').emit('results', 'Plugin dependancy "' + dep_plugin_id + '" already installed, \'sall good.');
                         return Q();
                     }
+
+                    var err = new Error('Dependancy plugin not installed - ' + dep_plugin_id);
+                    if (typeof callback == 'function') return callback(err);
+                    else throw err;
 
                     // Handle relative dependency paths by expanding and resolving them.
                     // The easy case of relative paths is to have a URL of '.' and a different subdir.
