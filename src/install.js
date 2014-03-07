@@ -196,12 +196,12 @@ function getEngines(pluginElement, platform, project_dir, plugin_dir){
 function isPluginInstalled(plugins_dir, platform, plugin_id) {
     var platform_config = config_changes.get_platform_json(plugins_dir, platform);
     for (var installed_plugin_id in platform_config.installed_plugins) {
-        if (installed_plugin_id == plugin_id) {
+        if (installed_plugin_id.toLowerCase() == plugin_id.toLowerCase()) {
             return true;
         }
     }
     for (var installed_plugin_id in platform_config.dependent_plugins) {
-        if (installed_plugin_id == plugin_id) {
+        if (installed_plugin_id.toLowerCase() == plugin_id.toLowerCase()) {
             return true;
         }
     }
@@ -270,6 +270,24 @@ var runInstall = module.exports.runInstall = function runInstall(actions, platfo
                     dep_git_ref = dep.attrib.commit;
                     if (dep_subdir) {
                         dep_subdir = path.join.apply(null, dep_subdir.split('/'));
+                    }
+
+                    var platform_config = config_changes.get_platform_json(plugins_dir, platform);
+                    var is_installed = false;
+                    Object.keys(platform_config.installed_plugins).forEach(function(installed_plugin_id) {
+                        if (installed_plugin_id.toLowerCase() == dep_plugin_id.toLowerCase()) {
+                            is_installed = true;
+                        }
+                    });
+                    Object.keys(platform_config.dependent_plugins).forEach(function(installed_plugin_id) {
+                        if (installed_plugin_id.toLowerCase() == dep_plugin_id.toLowerCase()) {
+                            is_installed = true;
+                        }
+                    });
+
+                    if (is_installed) {
+                        require('../plugman').emit('results', 'Plugin dependancy "' + plugin_id + '" already installed, \'sall good.');
+                        return Q();
                     }
 
                     // Handle relative dependency paths by expanding and resolving them.
